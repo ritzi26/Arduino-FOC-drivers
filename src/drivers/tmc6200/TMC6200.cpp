@@ -168,6 +168,7 @@ void TMC6200Driver::setStatus(TMC6200_GSTAT status) {
 
 uint32_t TMC6200Driver::readRegister(uint8_t addr) {
     digitalWrite(csPin, LOW);
+    delay(10);
     spi->beginTransaction(settings);
 
     // Address
@@ -180,14 +181,17 @@ uint32_t TMC6200Driver::readRegister(uint8_t addr) {
     value |= (spi->transfer(0x00) << 8);
     value |= (spi->transfer(0x00) << 0);
 
-    spi->end();
     digitalWrite(csPin, HIGH);
+
+    spi->endTransaction();
+    
 
     return value;
 }
 
 void TMC6200Driver::writeRegister(uint8_t addr, uint32_t data) {
     digitalWrite(csPin, LOW);
+    delay(10);
     spi->beginTransaction(settings);
 
     // Address
@@ -199,8 +203,9 @@ void TMC6200Driver::writeRegister(uint8_t addr, uint32_t data) {
     spi->transfer(0xFF & (data >> 8));
     spi->transfer(0xFF & (data >> 0));
 
-    spi->end();
     digitalWrite(csPin, HIGH);
+    spi->endTransaction();
+    
 }
 
 // --------------------
